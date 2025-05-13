@@ -8,6 +8,8 @@ import { ListagemDepartamento } from "./pages/ListagemDepartamento";
 import { AlterarProfissional } from "./pages/AlterarProfissional";
 import { Login } from "./pages/Login";
 import { AlterarDepartamento } from "./pages/AlterarDepartamento";
+import { PainelSenhas } from "./pages/PainelSenhas";
+import { PainelRecepcionista } from "./pages/PainelRecepcionista";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,14 @@ const router = createBrowserRouter([
   {
     path: "/alterarDepartamento/:id",
     element: <AlterarDepartamento />,
+  },
+  {
+    path: "/painel-senhas",
+    element: <PainelSenhas  />,
+  },
+  {
+    path: "/painel-recepcionista",
+    element: <PainelRecepcionista  />,
   },
   {},
 ]);

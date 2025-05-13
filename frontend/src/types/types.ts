@@ -11,12 +11,18 @@ export interface Profissional {
     status: string;
   }
   
-  export interface Senha {
-    idSenha?: number;
-    senha?: string;
-    tipoSenha?: string;
-    dtEmissao?: string;
-  }
+export interface Senha {
+  id: number | undefined;
+  idSenha?: number;
+  senha: string;
+  tipoSenha: string;
+  dtEmissao: string;
+  status?: {
+    idStatus?: number;
+    status: string;
+  };
+  guiche?: string;
+}
   
   export interface Departamento {
     idDepartamento?: number;

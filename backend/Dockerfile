@@ -1,14 +1,13 @@
-# Usar a imagem base do OpenJDK 17 para rodar a aplicação Java
-FROM openjdk:21-jdk-slim
-
-# Definir diretório de trabalho dentro do container
+# Etapa de compilação - Usando uma imagem que suporta Java 21
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copiar o JAR gerado pelo Maven para dentro do container
-COPY target/cardapaio-0.0.1-SNAPSHOT.jar app.jar
-
-# Expor a porta onde o backend rodará
+# Etapa de execução
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Comando para iniciar a aplicação
 ENTRYPOINT ["java", "-jar", "app.jar"]

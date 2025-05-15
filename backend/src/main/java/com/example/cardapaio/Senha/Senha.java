@@ -27,4 +27,17 @@ public class Senha {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtEmissao;
+    
+    // Novos campos
+    private String status; // "AGUARDANDO", "CHAMADA", "EM_ATENDIMENTO", "ATENDIDA"
+    private String guiche; // Número do guichê que está atendendo
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dtChamada; // Data/hora em que a senha foi chamada
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dtInicio; // Data/hora de início do atendimento
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dtFim; // Data/hora de término do atendimento
 }

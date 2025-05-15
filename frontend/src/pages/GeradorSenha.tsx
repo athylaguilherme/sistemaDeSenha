@@ -4,8 +4,10 @@ import { Senha } from "../types/types";
 import { useNavigate } from "react-router-dom";
 
 export function GeradorSenha() {
-  const [contadorPreferencial, setContadorPreferencial] = useState(1);
-  const [contadorNormal, setContadorNormal] = useState(1);
+  // Remover essas duas linhas que não são mais usadas
+  // const [contadorPreferencial, setContadorPreferencial] = useState(1);
+  // const [contadorNormal, setContadorNormal] = useState(1);
+  
   const [senha, setSenha] = useState("");
   const [tipoSenha, setTipoSenha] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -31,24 +33,15 @@ export function GeradorSenha() {
     setIsGenerating(true);
     
     try {
-      let novaSenha = "";
-      if (tipoSenha === "preferencial") {
-        novaSenha = `P${String(contadorPreferencial).padStart(3, "0")}`;
-        setContadorPreferencial((prev) => prev + 1);
-      } else {
-        novaSenha = `N${String(contadorNormal).padStart(3, "0")}`;
-        setContadorNormal((prev) => prev + 1);
-      }
-
-      setSenha(novaSenha);
-
       const novaSenhaObj: Senha = {
-        senha: novaSenha,
+        id: 0, // Será ignorado pelo backend
+        senha: "", // Será gerado pelo backend
         tipoSenha: tipoSenha,
         dtEmissao: new Date().toISOString(),
       };
 
-      await adicionarSenha(novaSenhaObj);
+      const senhaGerada = await adicionarSenha(novaSenhaObj);
+      setSenha(senhaGerada.senha);
       setShowSuccess(true);
     } catch (error) {
       console.error("Erro ao gerar senha:", error);

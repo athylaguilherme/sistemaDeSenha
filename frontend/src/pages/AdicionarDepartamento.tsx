@@ -31,7 +31,7 @@ export function AdicionarDepartamento() {
       setNome("");
       // Redireciona após um curto período
       setTimeout(() => {
-        navigate("/departamentos");
+        navigate("/listagemDepartamento");
       }, 1500);
     } catch (error) {
       setErro(`Erro ao cadastrar: ${error instanceof Error ? error.message : String(error)}`);

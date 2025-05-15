@@ -1,5 +1,5 @@
-# Etapa 1: Usar uma imagem Node.js para construir e rodar a aplicação
-FROM node:20-alpine
+# Etapa de build
+FROM node:20-alpine AS build
 
 # Define o diretório de trabalho
 WORKDIR /app
@@ -16,8 +16,17 @@ COPY . .
 # Rodar o comando de build do Vite
 RUN npm run build
 
-# Expor a porta do Vite (geralmente 5173 ou configurada no seu projeto)
-EXPOSE 5173
+# Etapa de execução
+FROM nginx:alpine
 
-# Rodar a aplicação com o Vite diretamente
-CMD ["npm", "run", "dev"]
+# Copiar os arquivos de build para o diretório web do nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Opcional: Copiar uma configuração personalizada do nginx, se necessário
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expor a porta 80
+EXPOSE 80
+
+# Iniciar o nginx
+CMD ["nginx", "-g", "daemon off;"]

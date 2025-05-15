@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { listarSenhas } from "../service/senhaService"; // Assumo que existe esse serviço
+import axios from "axios"; // Certifique-se de ter o axios instalado
 import { Senha } from "../types/types";
 
 export function PainelSenhas() {
@@ -10,36 +10,34 @@ export function PainelSenhas() {
   const [guiche, setGuiche] = useState<string>("");
   const navigate = useNavigate();
   
-  // Simula o recebimento de atualizações das senhas (em produção, use WebSockets)
+  // Carrega os dados do painel
   useEffect(() => {
-    const buscarSenhas = async () => {
-    try {
-        const senhas = await listarSenhas();
+    const buscarDados = async () => {
+      try {
+        // Buscar senhas preferenciais em espera
+        const resPreferenciais = await axios.get('http://localhost:8080/senhas/preferencial/espera');
+        setSenhasPreferenciais(resPreferenciais.data);
         
-        // Filtra senhas por tipo e status
-        const preferenciais = senhas.filter(s => 
-            s.tipoSenha === "preferencial" && s.status?.status === "Aguardando");
-        const comuns = senhas.filter(s => 
-            s.tipoSenha === "normal" && s.status?.status === "Aguardando");
+        // Buscar senhas comuns em espera
+        const resComuns = await axios.get('http://localhost:8080/senhas/comum/espera');
+        setSenhasComuns(resComuns.data);
         
-        // Verifica a senha atual sendo chamada
-        const chamada = senhas.find(s => s.status?.status === "Chamada");
-        
-        setSenhasPreferenciais(preferenciais);
-        setSenhasComuns(comuns);
-        
-        if (chamada) {
-            setSenhaAtual(chamada);
-            setGuiche(chamada.guiche || "1"); // Use um valor padrão se guiche for undefined
+        // Buscar senhas no painel (chamadas recentemente)
+        const resPainel = await axios.get('http://localhost:8080/senhas/painel');
+        if (resPainel.data && resPainel.data.length > 0) {
+          // Pegar a senha mais recente
+          const ultima = resPainel.data[0];
+          setSenhaAtual(ultima);
+          setGuiche(ultima.guiche || "1");
         }
-        } catch (error) {
-        console.error("Erro ao buscar senhas:", error);
-        }
+      } catch (error) {
+        console.error("Erro ao buscar dados do painel:", error);
+      }
     };
     
     // Executa imediatamente e depois a cada 5 segundos
-    buscarSenhas();
-    const interval = setInterval(buscarSenhas, 5000);
+    buscarDados();
+    const interval = setInterval(buscarDados, 5000);
     
     return () => clearInterval(interval);
   }, []);
@@ -95,9 +93,9 @@ export function PainelSenhas() {
             <div className="p-4">
               {senhasPreferenciais.length > 0 ? (
                 <div className="grid grid-cols-4 gap-3">
-                  {senhasPreferenciais.map((senha, index) => (
+                  {senhasPreferenciais.map((senha) => (
                     <div 
-                      key={index}
+                      key={senha.idSenha}
                       className="bg-green-50 text-green-700 border border-green-200 rounded-lg p-3 text-center font-bold"
                     >
                       {senha.senha}
@@ -120,9 +118,9 @@ export function PainelSenhas() {
             <div className="p-4">
               {senhasComuns.length > 0 ? (
                 <div className="grid grid-cols-4 gap-3">
-                  {senhasComuns.map((senha, index) => (
+                  {senhasComuns.map((senha) => (
                     <div 
-                      key={index}
+                      key={senha.idSenha}
                       className="bg-blue-50 text-blue-700 border border-blue-200 rounded-lg p-3 text-center font-bold"
                     >
                       {senha.senha}

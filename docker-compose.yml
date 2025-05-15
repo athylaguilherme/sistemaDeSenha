@@ -13,7 +13,7 @@ services:
   frontend:
     image: eduzziss/frontend-sistema-senhas2
     ports:
-      - "5173:5173"
+      - "8000:80"  # Alterado de 5173:5173 para 80:80
     depends_on:
       - backend
 

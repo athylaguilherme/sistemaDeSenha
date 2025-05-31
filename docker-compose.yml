@@ -1,6 +1,80 @@
+# services:
+#   backend:
+#     image: eduzziss/backend-sistema-senhas2
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/sistema_senhas
+#       - SPRING_DATASOURCE_USERNAME=postgres
+#       - SPRING_DATASOURCE_PASSWORD=1234
+#     depends_on:
+#       - db
+
+#   frontend:
+#     image: eduzziss/frontend-sistema-senhas2
+#     ports:
+#       - "8000:80"  # Alterado de 5173:5173 para 80:80
+#     depends_on:
+#       - backend
+
+#   db:
+#     image: postgres:15
+#     restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: 1234
+#       POSTGRES_DB: sistema_senhas
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#       - ./db-init:/docker-entrypoint-initdb.d 
+
+# volumes:
+#   postgres_data:
+
+
+# services:
+#   backend:
+#     build: ./backend  # ou o caminho para o backend
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/sistema_senhas
+#       - SPRING_DATASOURCE_USERNAME=postgres
+#       - SPRING_DATASOURCE_PASSWORD=1234
+#     depends_on:
+#       - db
+
+#   frontend:
+#     build: 
+#       context: ./frontend  # ou ./. se o Dockerfile está na raiz do frontend
+#       dockerfile: Dockerfile
+#     ports:
+#       - "8000:80"
+#     depends_on:
+#       - backend
+
+#   db:
+#     image: postgres:15
+#     restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: 1234
+#       POSTGRES_DB: sistema_senhas
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#       - ./db-init:/docker-entrypoint-initdb.d 
+
+# volumes:
+#   postgres_data:
+
+
 services:
   backend:
-    image: eduzziss/backend-sistema-senhas2
+    image: eduzziss/pi2025:backend-latest  # ← Mudança aqui
     ports:
       - "8080:8080"
     environment:
@@ -11,9 +85,9 @@ services:
       - db
 
   frontend:
-    image: eduzziss/frontend-sistema-senhas2
+    image: eduzziss/pi2025:frontend-latest  # ← Mudança aqui
     ports:
-      - "8000:80"  # Alterado de 5173:5173 para 80:80
+      - "8000:80"
     depends_on:
       - backend
 

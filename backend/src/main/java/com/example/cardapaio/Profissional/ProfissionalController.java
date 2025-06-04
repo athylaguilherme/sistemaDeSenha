@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.cardapaio.Status.Status;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:8000")
 @RestController
 @RequestMapping("/profissionais")
 public class ProfissionalController {
@@ -27,20 +27,51 @@ public class ProfissionalController {
         return service.adicionar(profissional);
     }
 
+    // @PostMapping("/login")
+    // public ResponseEntity<?> autenticar(@RequestBody Profissional profissional) {
+    //     Profissional encontrado = service.buscarPorLogin(profissional.getLogin());
+
+    //     if (encontrado == null || !encontrado.getSenha().equals(profissional.getSenha())) {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login ou senha incorretos!");
+    //     }
+
+    //     if (encontrado.getStatus() == null || !encontrado.getStatus().getStatus().equalsIgnoreCase("Ativo")) {
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado! Seu status não está ativo.");
+    //     }
+
+    //     return ResponseEntity.ok(encontrado);
+    // }
+
+
     @PostMapping("/login")
-    public ResponseEntity<?> autenticar(@RequestBody Profissional profissional) {
-        Profissional encontrado = service.buscarPorLogin(profissional.getLogin());
-
-        if (encontrado == null || !encontrado.getSenha().equals(profissional.getSenha())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login ou senha incorretos!");
-        }
-
-        if (encontrado.getStatus() == null || !encontrado.getStatus().getStatus().equalsIgnoreCase("Ativo")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado! Seu status não está ativo.");
-        }
-
-        return ResponseEntity.ok(encontrado);
+public ResponseEntity<?> autenticar(@RequestBody Profissional profissional) {
+    System.out.println("=== DEBUG LOGIN ===");
+    System.out.println("Login recebido: " + profissional.getLogin());
+    System.out.println("Senha recebida: " + profissional.getSenha());
+    
+    Profissional encontrado = service.buscarPorLogin(profissional.getLogin());
+    
+    System.out.println("Usuário encontrado: " + (encontrado != null ? "SIM" : "NÃO"));
+    
+    if (encontrado != null) {
+        System.out.println("Login no banco: " + encontrado.getLogin());
+        System.out.println("Senha no banco: " + encontrado.getSenha());
+        System.out.println("Status: " + (encontrado.getStatus() != null ? encontrado.getStatus().getStatus() : "NULL"));
     }
+
+    if (encontrado == null || !encontrado.getSenha().equals(profissional.getSenha())) {
+        System.out.println("❌ Login/senha incorretos");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login ou senha incorretos!");
+    }
+
+    if (encontrado.getStatus() == null || !encontrado.getStatus().getStatus().equalsIgnoreCase("Ativo")) {
+        System.out.println("❌ Status inativo");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado! Seu status não está ativo.");
+    }
+
+    System.out.println("✅ Login bem-sucedido");
+    return ResponseEntity.ok(encontrado);
+}
 
     @DeleteMapping("/{id}")
     public void excluir(@PathVariable Long id) {

@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS profissional (
     status_id BIGINT NOT NULL
 );
 
--- Criando a tabela senha com todos os campos necessários
+-- Criando a tabela senha com todos os campos necessários (SEM vírgula extra)
 CREATE TABLE IF NOT EXISTS senha (
     id_senha SERIAL PRIMARY KEY,
     senha VARCHAR(20) NOT NULL,
@@ -22,14 +22,28 @@ CREATE TABLE IF NOT EXISTS senha (
     guiche VARCHAR(20),
     dt_chamada TIMESTAMP,
     dt_inicio TIMESTAMP,
-    dt_fim TIMESTAMP,
-
+    dt_fim TIMESTAMP
 );
 
--- Inserindo os valores "ativo" e "inativo" se ainda não existirem
+-- Inserindo os valores de status
 INSERT INTO status (status) VALUES ('Ativo') ON CONFLICT (status) DO NOTHING;
-INSERT INTO status (status) VALUES ('Inativo') ON CONFLICT (status) DO NOTHING;
+INSERT INTO status (status) VALUES ('Desativo') ON CONFLICT (status) DO NOTHING;
 
-INSERT INTO profissional (nome,login,senha,status_id) VALUES('adm','adm','adm',1) ON CONFLICT (login) DO NOTHING;
+-- Aguardar um pouco para garantir que a transação dos status foi commitada
+SELECT pg_sleep(1);
 
-ALTER TABLE senha ADD CONSTRAINT senha_unique UNIQUE (senha);
+-- Inserir profissional com tratamento de erro
+DO $$
+BEGIN
+    -- Verificar se o usuário já existe
+    IF NOT EXISTS (SELECT 1 FROM profissional WHERE login = 'adm') THEN
+        INSERT INTO profissional (nome, login, senha, status_id) 
+        VALUES ('Administrador', 'adm', 'adm', 1);
+        RAISE NOTICE 'Usuário administrador criado com sucesso!';
+    ELSE
+        RAISE NOTICE 'Usuário administrador já existe!';
+    END IF;
+END $$;
+
+-- Adicionando constraint unique na senha
+ALTER TABLE senha ADD CONSTRAINT IF NOT EXISTS senha_unique UNIQUE (senha);
